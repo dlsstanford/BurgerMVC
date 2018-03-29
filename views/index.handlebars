@@ -1,33 +1,67 @@
-<h1>Cats!</h1>
+  <div class="container">
 
-<h2>Uneaten Burgers</h2>
+        <div class="jumbotron text-center">
 
-<ul>
-  {{#each burgers}}
-    {{#unless devoured}}
-      {{> burgers/burger-block devoured=false}}
-    {{/unless}}
-  {{/each}}
-</ul>
+            <h1>Build A Burger</h1>
+       
 
-<h2>Burgers you ate!</h2>
+        <div class="row">
 
-<ul>
-  {{#each cats}}
-    {{#if devoured}}
-      {{> burgers/burger-block devoured=true}}
-    {{/if}}
-  {{/each}}
-</ul>
+            <div class="col-md-12 ">
+                <div class="col-md-4">
+                    <div class="leftBurgers">
+                        <h2 class="heading">Created Burgers</h2>
+                        <br><br>
+                        <ul>
+                          {{#each burgers}}
+                            {{#unless this.devoured}}
+                              <li>
+                                <p class="burgerType">{{this.burger_name}}</p>
+                                <form action="burgers/updateOne/{{this.id}}?_method=PUT" method="POST">
+                                  <input type="hidden" name="devoured" value="true">
+                                  <button class="devour-burger" type="submit">Eat the burger</button>
+                                </form>
+                              </li>
+                            {{/unless}}
+                          {{/each}}
+                        </ul>
+                    </div>
+                </div>
 
-<h2>Add a Burger</h2>
-<form class="create-form">
+                <div class="col-md-4 text-center">
+                    <div class="input">
 
-  <div class="form-group">
-    <label for="ca">Burger Name:</label>
-    <input type="text" id="ca" name="name">
-  </div>
 
-  <button type="submit">Add Burger</button>
-</form>
- 
+                        <h2  class="heading" id="add">Make a new Burger</h2>
+                        <br><br>
+                        <div class="form-group">
+                            <form method="POST" action="burgers/insertOne" class="addOne text-center">
+                                <textarea id="textArea" type="text" name="burger_name" rows="2" cols="35"></textarea>
+                                <button id="create-burger"  type="submit" >Create Your Burger!</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 text-left">
+                    <div class="rightBurgers">
+                        <h2 class="heading">Eaten Burgers</h2>
+                        <br><br>
+                        <ul>
+                          {{#each burgers}}
+                            {{#if this.devoured}}
+                              <li>
+                                <p class="burgerType">{{this.burger_name}}</p>
+                                <form action="burgers/delete/{{this.id}}?_method=DELETE" method="POST">
+                                  <button class="delete-burger" type="submit">Delete it</button>
+                                </form>
+                              </li>
+                            {{/if}}
+                          {{/each}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+    </div>

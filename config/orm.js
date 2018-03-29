@@ -1,65 +1,76 @@
 var connection = require("./connection.js");
 
 // Object Relational Mapper (ORM)
-
-// The ?? signs are for swapping out table or column names
-// The ? signs are for swapping out other values
-// These help avoid SQL injection
-function objToSql(ob) {
+function printQuestionMarks(num) {
   var arr = [];
-
-  // loop through the keys and push the key/value as a string int arr
-  for (var key in ob) {
-    var value = ob[key];
-    // check to skip hidden properties
-    if (Object.hasOwnProperty.call(ob, key)) {
-      // if string with spaces, add quotations (Lana Del Grey => 'Lana Del Grey')
-      if (typeof value === "string" && value.indexOf(" ") >= 0) {
-        value = "'" + value + "'";
-      }
-      // e.g. {name: 'Lana Del Grey'} => ["name='Lana Del Grey'"]
-      // e.g. {sleepy: true} => ["sleepy=true"]
-      arr.push(key + "=" + value);
-    }
+ for (var i = 0; i < num; i++) {
+    arr.push('?');
   }
-  // translate array of strings to a single comma-separated string
   return arr.toString();
 }
 
+function objToSql(ob) {
+  // attaches values to columns
+  var arr = [];
+  for (var key in ob) {
+    if (ob.hasOwnProperty(key)) {
+      arr.push(key + '=' + ob[key]);
+    }
+  }
+  return arr.toString();
+}
+
+// Retrieve all data
 var orm = {
-  selectAll: function() {
-    var queryString = "SELECT * FROM burgers WHERE ?? = ?";
-    connection.query(queryString, function(err, result) {
+  selectAll: function (table, callback) {
+    var queryString = 'SELECT * FROM ' + table + ';';
+    connection.query(queryString, function (err, result) {
       if (err) throw err;
-      console.log(result);
+      callback(result);
     });
   },
-  insertOne: function(table, orderCol) {
-    var queryString = "INSERT INTO burgers (burger_name) VALUES ??";
-    console.log(queryString);
-    connection.query(queryString, [whatToSelect, table, orderCol], function(
-      err,
-      result
-    ) {
+
+    // vals is an array of values that we want to save to cols
+    // cols are the columns we want to insert the values into
+  insertOne: function (table, cols, vals, callback) {
+    var queryString = 'INSERT INTO ' + table;
+
+    queryString = queryString + ' (';
+    queryString = queryString + cols.toString();
+    queryString = queryString + ') ';
+    queryString = queryString + 'VALUES (';
+    queryString = queryString + printQuestionMarks(vals.length);
+    queryString = queryString + ') ';
+
+    connection.query(queryString, vals, function (err, result) {
       if (err) throw err;
-      console.log(result);
+      callback(result);
     });
   },
-  update: function(table, objColVals, condition, cb) {
-    var queryString = "UPDATE " + table;
+    // objColVals = columns and values to update
+  updateOne: function (table, objColVals, condition, callback) {
+    var queryString = 'UPDATE ' + table;
 
-    queryString += " SET ";
-    queryString += objToSql(objColVals);
-    queryString += " WHERE ";
-    queryString += condition;
+    queryString = queryString + ' SET ';
+    queryString = queryString + objToSql(objColVals);
+    queryString = queryString + ' WHERE ';
+    queryString = queryString + condition;
+
+    connection.query(queryString, function (err, result) {
+      if (err) throw err;
+      callback(result);
+    });
+  },
+
+  delete: function (table, condition, callback) {
+    var queryString = 'DELETE FROM ' + table;
+    queryString = queryString + ' WHERE ';
+    queryString = queryString + condition;
 
     console.log(queryString);
-    connection.query(queryString, function(err, result) {
-      if (err) {
-        throw err;
-      }
-
-      cb(result);
+    connection.query(queryString, function (err, result) {
+      if (err) throw err;
+      callback(result);
     });
   }
 };
