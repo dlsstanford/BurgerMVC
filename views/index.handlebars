@@ -48,12 +48,13 @@
                         <h2 class="heading">Eaten Burgers</h2>
                         <br><br>
                         <ul>
+                            {{!-- attaches handlebars for none  --}}
                           {{#each burgers}}
                             {{#if this.devoured}}
                               <li>
                                 <p class="burgerType">{{this.burger_name}}</p>
                                 <form action="burgers/delete/{{this.id}}?_method=DELETE" method="POST">
-                                  <button class="delete-burger" type="submit">Delete it</button>
+                                  <button class="devour-burger" type="submit">Delete it</button>
                                 </form>
                               </li>
                             {{/if}}
