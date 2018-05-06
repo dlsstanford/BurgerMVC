@@ -1,7 +1,8 @@
 # BurgerMVC
 Full Stack Model-View-Controller application following the CRUD methodology
+Demo Application can be viewed at: https://burger-mvc.herokuapp.com/
 
-##Technologies Used
+## Technologies Used
 - Node.js
 - Express
 - SQL Queries
